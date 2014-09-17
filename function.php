@@ -1,45 +1,69 @@
 <?php
 
 /**
- * ¼ÆËãÁ½¸öÊ±¼äµÄ¼ä¸ôÊ±¼ä
+ * è®¡ç®—ä¸¤ä¸ªæ—¶é—´çš„é—´éš”æ—¶é—´
  * @param $time
  * @param null $other
  * @return string
  */
 function diffTimeHumans($time, $other=null) {
-	empty($other) && $other = time();
+    empty($other) && $other = time();
 
-	$diff = $other - $time;
+    $diff = $other - $time;
 
-	// ÅĞ¶ÏÒª¼ÆËãµÄÊ±¼äÊÇ·ñ´óÓÚµ±Ç°Ê±¼ä
-	$isFuture = true;
-	if ($diff > 0) {
-		$isFuture = false;
-	}
+    // åˆ¤æ–­è¦è®¡ç®—çš„æ—¶é—´æ˜¯å¦å¤§äºå½“å‰æ—¶é—´
+    $isFuture = true;
+    if ($diff > 0) {
+        $isFuture = false;
+    }
 
-	// È¡¾ø¶ÔÖµ
-	$diff = abs($diff);
+    // å–ç»å¯¹å€¼
+    $diff = abs($diff);
 
-	$map = [
-		0 => ['title' => 'Ãë', 'denominator' => 60],
-		1 => ['title' => '·Ö', 'denominator' => 60],
-		2 => ['title' => 'Ê±', 'denominator' => 24],
-		3 => ['title' => 'Ìì', 'denominator' => 30],
-		4 => ['title' => 'ÔÂ', 'denominator' => 12],
-		5 => ['title' => 'Äê', 'denominator' => 100]
-	];
-	$index = -1;
+    $map = [
+        0 => ['title' => 'ç§’', 'denominator' => 60],
+        1 => ['title' => 'åˆ†', 'denominator' => 60],
+        2 => ['title' => 'æ—¶', 'denominator' => 24],
+        3 => ['title' => 'å¤©', 'denominator' => 30],
+        4 => ['title' => 'æœˆ', 'denominator' => 12],
+        5 => ['title' => 'å¹´', 'denominator' => 100]
+    ];
+    $index = -1;
 
-	$result = [];
-	while ($diff > 0) {
-		$index++;
-		$result[$index] = $diff % $map[$index]['denominator'];
-		$diff = ($diff - $result[$index]) / $map[$index]['denominator'];
-	}
+    $result = [];
+    while ($diff > 0) {
+        $index++;
+        $result[$index] = $diff % $map[$index]['denominator'];
+        $diff = ($diff - $result[$index]) / $map[$index]['denominator'];
+    }
 
-	$str = '';
-	foreach ($result as $k=>$v) {
-		$str = $v.$map[$k]['title'].$str;
-	}
-	return $isFuture ? 'Ê£Óà'.$str : '³¬¹ı'.$str;
+    $str = '';
+    foreach ($result as $k=>$v) {
+        $str = $v.$map[$k]['title'].$str;
+    }
+    return $isFuture ? 'å‰©ä½™'.$str : 'è¶…è¿‡'.$str;
+}
+
+
+/**
+ * æ ¹æ®ç»çº¬åº¦è®¡ç®—ä¸¤ä¸ªåœ°å€çš„çƒé¢è·ç¦»
+ * @param $lat1 çº¬åº¦1
+ * @param $lng1 ç»åº¦1
+ * @param $lat2 çº¬åº¦2
+ * @param $lng2 ç»åº¦2
+ * @return float è·ç¦»(ç±³)
+ */
+function getDistance($lat1,$lng1,$lat2,$lng2)
+{
+    //åœ°çƒåŠå¾„
+    $R = 6372797;
+
+    //å°†è§’åº¦è½¬ä¸ºç‹åº¦
+    $radLat1 = deg2rad($lat1);
+    $radLat2 = deg2rad($lat2);
+    $radLng1 = deg2rad($lng1);
+    $radLng2 = deg2rad($lng2);
+
+    //ç»“æœ
+    return round(acos(cos($radLat1)*cos($radLat2)*cos($radLng1-$radLng2)+sin($radLat1)*sin($radLat2))*$R, 2);
 }
